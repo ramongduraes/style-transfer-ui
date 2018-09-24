@@ -1,14 +1,14 @@
 {
-  "name": "new",
+  "name": "style-transfer-service-user-interface",
   "version": "1.0.0",
-  "description": "",
+  "description": "User interface sketch for SingularityNET's Style Transfer Service using React and Ant Design.",
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
     "antd": "3.9.2",
     "react": "16.4.2",
     "react-dom": "16.4.2",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.5"
   },
   "devDependencies": {},
   "scripts": {

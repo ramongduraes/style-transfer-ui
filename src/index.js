@@ -1,6 +1,4 @@
-// imports the React Javascript Library
 import React from "react";
-// imports the Icon, Button and Upload (reusable) components from ant design
 import {
   Layout,
   Popover,
@@ -13,10 +11,11 @@ import {
   Row,
   Col,
   Collapse,
-  Switch
+  Switch,
+  Card
 } from "antd";
 import ReactDOM from "react-dom";
-import ImageUpload from "./imageUploadComponent";
+import { ImageUploadCard } from "./imageUploadComponent";
 import "antd/dist/antd.css";
 
 const { Header, Footer, Sider, Content } = Layout;
@@ -41,9 +40,54 @@ class StyleTransfer extends React.Component {
       size: "large"
     };
 
-    this.MethodhandleChange = this.MethodhandleChange.bind(this);
     this.ModelhandleChange = this.ModelhandleChange.bind(this);
     this.MethodHandleSwitchChange = this.MethodHandleSwitchChange.bind(this);
+  }
+
+  paramsList = [
+    {
+      key: "startFromRandom",
+      text: "Start From Random",
+      default: true,
+      input: <Switch defaultChecked onChange={this.MethodHandleSwitchChange} />,
+      popoverText: (
+        <p align="center" style={{ width: 0.13 * window.innerWidth }}>
+          Toggle to start from a randomly generated image instead of the content
+          image.
+        </p>
+      ),
+      popoverStyle: { width: 0.13 * window.innerWidth }
+    }
+  ];
+
+  galleryImageList = [
+    "https://raw.githubusercontent.com/dxyang/StyleTransfer/master/style_imgs/mosaic.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1280px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+    "https://raw.githubusercontent.com/ShafeenTejani/fast-style-transfer/master/examples/dora-maar-picasso.jpg",
+    "https://pbs.twimg.com/profile_images/925531519858257920/IyYLHp-u_400x400.jpg",
+    "https://raw.githubusercontent.com/ShafeenTejani/fast-style-transfer/master/examples/dog.jpg",
+    "http://r.ddmcdn.com/s_f/o_1/cx_462/cy_245/cw_1349/ch_1349/w_720/APL/uploads/2015/06/caturday-shutterstock_149320799.jpg"
+  ];
+
+  renderHeader() {
+    return (
+      <div>
+        <Row type="flex">
+          <Col span={1} align="left">
+            <img
+              src="http://alpha.singularitynet.io/img/logo.svg"
+              alt="logo"
+              style={{ width: 100, height: 40 }}
+            />
+          </Col>
+          <Col span={23} align="center">
+            <h2 valign="bottom" style={{ color: "white", fontWeight: "bold" }}>
+              Artistic Style Transfer
+            </h2>
+          </Col>
+        </Row>
+      </div>
+    );
   }
 
   isComplete() {
@@ -75,8 +119,189 @@ class StyleTransfer extends React.Component {
     });
   }
 
-  MethodhandleChange(event) {
-    this.setState({ method_value: event.target.value });
+  renderParamters() {
+    var paramsList = [
+      {
+        key: "startFromRandom",
+        text: "Start From Random",
+        default: true,
+        input: (
+          <Switch defaultChecked onChange={this.MethodHandleSwitchChange} />
+        ),
+        popoverText: (
+          <p align="center" style={{ width: 0.13 * window.innerWidth }}>
+            Toggle to start from a randomly generated image instead of the
+            content image.
+          </p>
+        )
+      },
+      {
+        key: "outputImageSize",
+        text: "Output Image Size",
+        default: 300,
+        input: (
+          <Input
+            defaultValue="300"
+            style={{ width: "60px", textAlign: "center" }}
+          />
+        ),
+        popoverText: (
+          <p align="center" style={{ width: 0.15 * window.innerWidth }}>
+            Define the dimensions of the output image (size x size).
+          </p>
+        )
+      },
+      {
+        key: "optimizationRounds",
+        text: "Optimization Rounds",
+        default: 10,
+        input: (
+          <Input
+            defaultValue="10"
+            style={{ width: "40px", textAlign: "center" }}
+          />
+        ),
+        popoverText: (
+          <p align="center" style={{ width: 0.1 * window.innerWidth }}>
+            Choose the number of optimization rounds.
+          </p>
+        )
+      },
+      {
+        key: "optimizationIterations",
+        text: "Optimization Iterations",
+        default: 20,
+        input: (
+          <Input
+            defaultValue="20"
+            style={{ width: "40px", textAlign: "center" }}
+          />
+        ),
+        popoverText: (
+          <p align="center" style={{ width: 0.1 * window.innerWidth }}>
+            Choose the number of optimization iterations per round.
+          </p>
+        )
+      }
+    ];
+
+    //var parameters = []
+
+    //const testlistParams = paramsList.map((param, this.parameters) => (
+    //  parameters.push(param.key) ));
+
+    const listParams = paramsList.map(param => (
+      <Popover content={param.popoverText} style={param.popoverStyle}>
+        <Col>
+          {param.text}
+          <br />
+          {param.input}
+        </Col>
+      </Popover>
+    ));
+
+    /* Code for parameter columns
+    const PopoverStartFromRandomText = (
+      <div >
+        <p align="center" style={{ width: 0.13 * window.innerWidth }}>
+          Toggle to start from a randomly generated image instead of the content
+          image.
+        </p>
+      </div>
+    );
+
+    const PopoverOutputImageSizeText = (
+      <div style={{ width: 0.15 * window.innerWidth }}>
+        <p align="center">
+          Define the dimensions of the output image (size x size).
+        </p>
+      </div>
+    );
+
+    const PopoverOptimizationRoundsText = (
+      <div style={{ width: 0.1 * window.innerWidth }}>
+        <p align="center">Choose the number of optimization rounds.</p>
+      </div>
+    );
+
+    const PopoverOptimizationIterationsText = (
+      <div style={{ width: 0.1 * window.innerWidth }}>
+        <p align="center">
+          Choose the number of optimization iterations per round.
+        </p>
+      </div>
+    ); */
+
+    /* Code for parameter columns
+    <Popover content={PopoverStartFromRandomText}>
+      <Col>
+        Start from random
+                  <br />
+        <Switch
+          defaultChecked
+          onChange={this.MethodHandleSwitchChange}
+        />
+      </Col>
+    </Popover>
+      <Popover content={PopoverOutputImageSizeText}>
+        <Col>
+          Output Image Size
+                  <br />
+          <Input
+            defaultValue="300"
+            style={{ width: "60px", textAlign: "center" }}
+          />
+        </Col>
+      </Popover>
+      <Popover content={PopoverOptimizationRoundsText}>
+        <Col>
+          Optimization Rounds
+                  <br />
+          <Input
+            defaultValue="10"
+            style={{ width: "40px", textAlign: "center" }}
+          />
+        </Col>
+      </Popover>
+      <Popover content={PopoverOptimizationIterationsText}>
+        <Col>
+          Optimization Iterations
+                  <br />
+          <Input
+            defaultValue="20"
+            style={{ width: "40px", textAlign: "center" }}
+          />
+        </Col>
+      </Popover>*/
+
+    function handleResetParams() {}
+
+    return (
+      <Collapse bordered={false}>
+        <Panel
+          header={
+            <h3>
+              <b>Parameters</b>
+            </h3>
+          }
+          key="1"
+        >
+          <Card
+            actions={[
+              <Icon
+                type="undo"
+                theme="outlined"
+                onClick={handleResetParams()}
+              />
+            ]}
+          >
+            <Row type="flex" justify="space-around" align="middle">
+              {listParams}
+            </Row>
+          </Card>
+        </Panel>
+      </Collapse>
+    );
   }
 
   ModelhandleChange(event) {
@@ -87,131 +312,60 @@ class StyleTransfer extends React.Component {
     console.log(`switch to ${checked}`);
   }
 
-  renderForm() {
-    const PopoverStartFromRandomText = (
-      <div style={{ width: 0.15 * window.innerWidth }}>
-        <p align="justify">
-          Toggle to start from a randomly generated image instead of the content
-          image.
+  renderText() {
+    return (
+      <Row type="flex" justify="center">
+        <br />
+        <p align="center">
+          Transfer the style of a <b>style image</b> to a <b>content image</b>{" "}
+          by choosing them in the boxes below. You can <b>upload</b> a file from
+          your computer, from a <b>URL</b> or pick one of the images available
+          in the <b>gallery</b>.
         </p>
-      </div>
-    );
-
-    const PopoverOutputImageSizeText = (
-      <div style={{ width: 0.15 * window.innerWidth }}>
-        <p align="justify">
-          Define the dimensions of the output image (size x size).
+        <p align="center">
+          You can specify additional <b>parameters</b> in the panel below the
+          image uploading area. Place the mouse over each parameter for a brief
+          explanation.
         </p>
-      </div>
+      </Row>
     );
+  }
 
-    const PopoverOptimizationRoundsText = (
-      <div style={{ width: 0.15 * window.innerWidth }}>
-        <p align="justify">Choose the number of optimization rounds.</p>
-      </div>
-    );
-
-    const PopoverOptimizationIterationsText = (
-      <div style={{ width: 0.15 * window.innerWidth }}>
-        <p align="justify">Choose the number of optimization iterations.</p>
-      </div>
-    );
-
+  renderContent() {
     return (
       <React.Fragment>
-        <div align="center">
-          <br />
-          <div>
-            <p align="center">
-              A service that transfers the style of an image to another.
-            </p>
+        <Row type="flex" justify="center">
+          <Col span={11}>
+            <ImageUploadCard
+              cardTitle="Content Image"
+              galleryImageList={this.galleryImageList}
+            />
+          </Col>
+          <Col span={11}>
+            <ImageUploadCard
+              cardTitle="Style Image"
+              galleryImageList={this.galleryImageList}
+            />{" "}
+          </Col>
+        </Row>
+        <Row type="flex" justify="space-around">
+          <Col span={22}>{this.renderParamters()}</Col>
+        </Row>
+        <br />
+        <Row>
+          <div align="center">
+            <Button
+              type="primary"
+              onClick={() => {
+                this.submitAction();
+              }}
+              disabled={!this.state.fileUploaded}
+            >
+              Call Agent API
+            </Button>
           </div>
-          <br />
-          <React.Fragment>
-            <div>
-              <table style={{ width: 0.9 * window.innerWidth, border: 5 }}>
-                <tbody>
-                  <tr>
-                    <td align="center"> Content Image </td>
-                    <td align="center"> Style Image </td>
-                  </tr>
-                  <tr>
-                    <td align="center">
-                      {" "}
-                      <ImageUpload />{" "}
-                    </td>
-                    <td align="center">
-                      {" "}
-                      <ImageUpload />{" "}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </React.Fragment>
-          <React.Fragment>
-            <Collapse bordered={false}>
-              <Panel
-                header="Advanced Parameters"
-                key="1"
-                style={{ width: 0.9 * window.innerWidth, border: 5 }}
-              >
-                <Row type="flex" justify="space-around" align="middle">
-                  <Popover content={PopoverStartFromRandomText}>
-                    <Col>
-                      Start from random
-                      <br />
-                      <Switch
-                        defaultChecked
-                        onChange={this.MethodHandleSwitchChange}
-                      />
-                    </Col>
-                  </Popover>
-                  <Popover content={PopoverOutputImageSizeText}>
-                    <Col>
-                      Output Image Size
-                      <br />
-                      <Input
-                        defaultValue="300"
-                        style={{ width: "60px", textAlign: "center" }}
-                      />
-                    </Col>
-                  </Popover>
-                  <Popover content={PopoverOptimizationRoundsText}>
-                    <Col>
-                      Optimization Rounds
-                      <br />
-                      <Input
-                        defaultValue="10"
-                        style={{ width: "40px", textAlign: "center" }}
-                      />
-                    </Col>
-                  </Popover>
-                  <Popover content={PopoverOptimizationIterationsText}>
-                    <Col>
-                      Optimization Iterations
-                      <br />
-                      <Input
-                        defaultValue="20"
-                        style={{ width: "40px", textAlign: "center" }}
-                      />
-                    </Col>
-                  </Popover>
-                </Row>
-              </Panel>
-            </Collapse>
-          </React.Fragment>
-
-          <Button
-            type="primary"
-            onClick={() => {
-              this.submitAction();
-            }}
-            disabled={!this.state.fileUploaded}
-          >
-            Call Agent API
-          </Button>
-        </div>
+        </Row>
+        <br />
       </React.Fragment>
     );
   }
@@ -229,69 +383,36 @@ class StyleTransfer extends React.Component {
 
     return (
       <div>
-        <div>
-          <p align="center">
-            A service that transfers the style of an image to another.
-          </p>
-        </div>
         <br />
-        <br />
-        <div>
-          <ul>
-            {arr.map(item => (
-              <Json2List key={item} label={item} value={jsonTop5[item]} />
-            ))}
-          </ul>
-          Execution time: {delta_time}s
-        </div>
+        <ul>
+          {arr.map(item => (
+            <Json2List key={item} label={item} value={jsonTop5[item]} />
+          ))}
+        </ul>
+        Execution time: {delta_time}s
       </div>
     );
   }
 
-  renderHeader() {
-    return (
-      <div>
-        <Row type="flex">
-          <Col span={2} align="left">
-            <img
-              src="http://alpha.singularitynet.io/img/logo.svg"
-              alt="logo"
-              style={{ width: 100, height: 40 }}
-            />
-          </Col>
-          <Col span={19} align="center">
-            <h2 valign="bottom" style={{ color: "white", fontWeight: "bold" }}>
-              Artistic Style Transfer
-            </h2>
-          </Col>
-        </Row>
-      </div>
-    );
-  }
-
+  // Relevant color codes:
+  // Ant Design's primary blue #20AAF8
+  // SingularityNET-Alpha's purple #230D3A
+  // Light blue #beecff
   render() {
-    if (this.isComplete())
-      return (
-        <div>
-          <Layout>
-            <Header style={{ backgroundColor: "#230D3A" }}>
-              {this.renderHeader()}
-            </Header>
-            <Content>{this.renderComplete()}</Content>
-          </Layout>
-        </div>
-      );
-    else
-      return (
-        <div>
-          <Layout>
-            <Header style={{ backgroundColor: "#230D3A" }}>
-              {this.renderHeader()}
-            </Header>
-            <Content>{this.renderForm()}</Content>
-          </Layout>
-        </div>
-      );
+    return (
+      <div align="center">
+        <Layout>
+          <Header style={{ backgroundColor: "#20AAF8" }}>
+            {this.renderHeader()}
+          </Header>
+          <Content style={{ backgroundColor: "#FFFFFF" }}>
+            {this.renderText()}
+            {!this.isComplete() && this.renderContent()}
+            {this.isComplete() && this.renderComplete()}
+          </Content>
+        </Layout>
+      </div>
+    );
   }
 }
 
@@ -301,5 +422,4 @@ class Json2List extends React.Component {
   }
 }
 
-//render (StyleTransfer, document.getElementById("app"));
 ReactDOM.render(<StyleTransfer />, document.getElementById("app"));

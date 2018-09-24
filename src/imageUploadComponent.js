@@ -1,38 +1,51 @@
 // imports the React Javascript Library
 import React from "react";
 // imports the Icon, Button and Upload (reusable) components from ant design
-import { Icon, Button, Upload, Radio, Row, Col, Input } from "antd";
+import {
+  Icon,
+  Button,
+  Upload,
+  Radio,
+  Row,
+  Col,
+  Input,
+  Card,
+  Avatar
+} from "antd";
 import ReactDOM from "react-dom";
 
-class ImageUpload extends React.Component {
+class ImageUploadCard extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      imageSource: "computer",
+      key: "upload",
       file: undefined,
       fileUploaded: false,
-      fileReader: undefined
+      fileReader: undefined,
+      filename: undefined
     };
-    this.handleSourceChange = this.handleSourceChange.bind(this);
+
+    this.handleResetAction = this.handleResetAction.bind(this);
   }
 
-  handleSourceChange(e) {
-    this.setState({ imageSource: e.target.value });
-  }
+  onTabChange = (key, type) => {
+    this.setState({
+      [type]: key,
+      file: undefined,
+      fileUploaded: false,
+      fileReader: undefined,
+      filename: undefined
+    });
+  };
 
-  renderSourceChoice() {
-    const source = this.state.imageSource;
-    return (
-      <React.Fragment>
-        <Radio.Group value={source} onChange={this.handleSourceChange}>
-          <Radio.Button value="computer">Upload</Radio.Button>
-          <Radio.Button value="url">URL</Radio.Button>
-          <Radio.Button value="gallery" disabled={true}>
-            Gallery
-          </Radio.Button>
-        </Radio.Group>
-      </React.Fragment>
-    );
+  handleResetAction() {
+    this.setState({
+      fileUploaded: false,
+      file: undefined,
+      fileReader: undefined,
+      filename: undefined
+    });
   }
 
   processFile(file) {
@@ -42,78 +55,80 @@ class ImageUpload extends React.Component {
       this.setState({
         fileUploaded: true,
         file: file,
-        fileReader: reader
+        fileReader: reader,
+        filename: file.name
       });
     };
 
     reader.readAsDataURL(file);
   }
 
-  renderComputerUpload() {
+  renderUploadContent() {
     return (
       <React.Fragment>
         <div align="center">
           <React.Fragment>
-            {!this.state.fileUploaded && (
-              <React.Fragment>
-                <br />
-                <br />
-                <Upload.Dragger
+            {!this.state.fileUploaded &&
+              this.state.key == "upload" && (
+                <React.Fragment>
+                  <br />
+                  <br />
+                  <Upload.Dragger
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "100%"
+                    }}
+                    name="file"
+                    accept=".jpg,.jpeg,.png"
+                    beforeUpload={file => {
+                      this.processFile(file);
+                      return false;
+                    }}
+                  >
+                    <p className="ant-upload-drag-icon">
+                      <Icon type="inbox" />
+                    </p>
+                    <p className="ant-upload-text">
+                      Click for file-chooser dialog or drag an image to this
+                      area.
+                    </p>
+                  </Upload.Dragger>
+                </React.Fragment>
+              )}
+            {this.state.fileUploaded &&
+              this.state.key == "upload" && (
+                <img
+                  src={this.state.fileReader.result}
                   style={{
-                    width: 0.4 * window.innerWidth,
-                    maxwidth: 0.4 * window.innerWidth
+                    maxWidth: "100%",
+                    maxHeight: "100%"
                   }}
-                  name="file"
-                  accept=".jpg,.jpeg,.png"
-                  beforeUpload={file => {
-                    this.processFile(file);
-                    return false;
-                  }}
-                >
-                  <p className="ant-upload-drag-icon">
-                    <Icon type="inbox" />
-                  </p>
-                  <p className="ant-upload-text">
-                    Click for file-chooser dialog or drag an image to this area.
-                  </p>
-                </Upload.Dragger>
-              </React.Fragment>
-            )}
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <b>File:</b>
-                  </td>
-                  <td>
-                    {this.state.file
-                      ? `${this.state.file.name}`
-                      : "(not uploaded)"}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                />
+              )}
 
-            <br />
-            <br />
-            {this.state.fileUploaded && (
-              <img
-                src={this.state.fileReader.result}
-                style={{
-                  width: 0.4 * window.innerWidth,
-                  maxwidth: 0.4 * window.innerWidth
-                }}
-              />
-            )}
-            <br />
-            <br />
+            <Row>
+              <br />
+              <b>File: </b>
+              {this.state.file ? `${this.state.file.name}` : "(not uploaded)"}
+            </Row>
           </React.Fragment>
         </div>
       </React.Fragment>
     );
   }
 
-  renderURLUpload() {
+  handleURLSearch(value) {
+    var filename = value.substring(value.lastIndexOf("/") + 1);
+    console.log(filename);
+    this.setState({
+      fileUploaded: true,
+      file: value,
+      fileReader: undefined,
+      filename: filename
+    });
+  }
+
+  renderURLContent() {
     const Search = Input.Search;
     return (
       <React.Fragment>
@@ -123,77 +138,130 @@ class ImageUpload extends React.Component {
             <br />
             <Search
               style={{
-                width: 0.4 * window.innerWidth,
-                maxwidth: 0.4 * window.innerWidth
+                maxWidth: "100%"
               }}
               placeholder="Enter image URL"
-              onSearch={value => console.log(value)}
+              onSearch={value => this.handleURLSearch(value)}
               enterButton
             />
           </React.Fragment>
         )}
-        <table>
-          <tbody>
-            <tr>
-              <td>
-                <b>File:</b>
-              </td>
-              <td>
-                {this.state.file ? `${this.state.file.name}` : "(not uploaded)"}
-              </td>
-            </tr>
-          </tbody>
-        </table>
 
-        <br />
-        <br />
         {this.state.fileUploaded && (
           <img
-            src={this.state.fileReader.result}
+            src={this.state.file}
             style={{
-              width: 0.4 * window.innerWidth,
-              maxwidth: 0.4 * window.innerWidth
+              maxWidth: "100%",
+              maxHeight: "100%"
             }}
           />
         )}
 
-        <br />
-        <br />
-        <br />
-        <p>To be implemented.</p>
+        <Row>
+          <br />
+          <b>File: </b>
+          {this.state.file ? `${this.state.filename}` : "(not uploaded)"}
+        </Row>
       </React.Fragment>
     );
   }
 
-  renderGalleryUpload() {
-    <React.Fragment>
-      <p>To be implemented.</p>
-    </React.Fragment>;
+  handleAvatarClick(value) {
+    var filename = value.url.substring(value.url.lastIndexOf("/") + 1);
+    console.log(filename);
+    this.setState({
+      fileUploaded: true,
+      file: value.url,
+      fileReader: undefined,
+      filename: filename
+    });
   }
 
-  renderUpload() {
-    if (this.state.imageSource === "computer")
-      return <div>{this.renderComputerUpload()}</div>;
-    else if (this.state.imageSource === "url")
-      return <div>{this.renderURLUpload()}</div>;
-    else if (this.state.imageSource === "gallery")
-      return <div>{this.renderGalleryUpload()}</div>;
-  }
-  render() {
+  renderGalleryContent() {
+    const listItems = this.props.galleryImageList.map(url => (
+      <div
+        onClick={value => this.handleAvatarClick({ url })}
+        style={{
+          padding: "5px 5px 5px 5px",
+          cursor: "pointer"
+        }}
+      >
+        <Avatar shape="square" size={100} src={url} />
+      </div>
+    ));
+
     return (
       <React.Fragment>
-        <div>
-          <Row type="flex" valign="top" align="center">
-            {this.renderSourceChoice()}
-          </Row>
-          <Row type="flex" align="center">
-            {" "}
-            {this.renderUpload()}{" "}
-          </Row>
-        </div>
+        {!this.state.fileUploaded &&
+          this.state.key == "gallery" && (
+            <Row type="flex" justify="space-between">
+              {listItems}
+            </Row>
+          )}
+        {this.state.fileUploaded &&
+          this.state.key == "gallery" && (
+            <img
+              src={this.state.file}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%"
+              }}
+            />
+          )}
+        <Row>
+          <br />
+          <b>File: </b>
+          {this.state.file ? `${this.state.filename}` : "(not uploaded)"}
+        </Row>
       </React.Fragment>
+    );
+  }
+
+  render() {
+    const tabList = [
+      {
+        key: "upload",
+        tab: "Upload"
+      },
+      {
+        key: "url",
+        tab: "URL"
+      },
+      {
+        key: "gallery",
+        tab: "Gallery"
+      }
+    ];
+
+    const contentList = {
+      upload: this.renderUploadContent(),
+      url: this.renderURLContent(),
+      gallery: this.renderGalleryContent()
+    };
+
+    return (
+      <div>
+        <Card
+          style={{ width: "100%" }}
+          title={<b>{this.props.cardTitle}</b>}
+          tabList={tabList}
+          actions={[
+            <Icon
+              type="undo"
+              theme="outlined"
+              onClick={this.handleResetAction}
+            />
+          ]}
+          activeTabKey={this.state.key}
+          onTabChange={key => {
+            this.onTabChange(key, "key");
+          }}
+        >
+          {contentList[this.state.key]}
+        </Card>
+      </div>
     );
   }
 }
 
-export default ImageUpload;
+export { ImageUploadCard };
